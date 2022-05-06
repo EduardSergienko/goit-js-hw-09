@@ -8,8 +8,11 @@ const hoursEl = document.querySelector('[data-hours]');
 const minutesEl = document.querySelector('[data-minutes]');
 const secondsEl = document.querySelector('[data-seconds]');
 const startBtn = document.querySelector('[data-start]');
+
 startBtn.setAttribute('disabled', true);
+
 let selectedTime = null;
+
 flatpickr('#datetime-picker', {
   enableTime: true,
   time_24hr: true,
@@ -29,6 +32,21 @@ flatpickr('#datetime-picker', {
     }
   },
 });
+
+startBtn.addEventListener('click', onStartBtnCkick);
+function onStartBtnCkick() {
+  const intervalID = setInterval(() => {
+    const curTime = Date.now();
+    const deltaTime = selectedTime - curTime;
+
+    const { days, hours, minutes, seconds } = convertMs(deltaTime);
+    updateTimeValues({ days, hours, minutes, seconds });
+    if (deltaTime < 999) {
+      clearInterval(intervalID);
+    }
+    console.log(`${days}:${hours}:${minutes}:${seconds}`);
+  }, 1000);
+}
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -58,19 +76,4 @@ function updateTimeValues({ days, hours, minutes, seconds }) {
   hoursEl.textContent = `${hours}`;
   minutesEl.textContent = `${minutes}`;
   secondsEl.textContent = `${seconds}`;
-}
-
-startBtn.addEventListener('click', onStartBtnCkick);
-function onStartBtnCkick() {
-  const intervalID = setInterval(() => {
-    const curTime = Date.now();
-    const deltaTime = selectedTime - curTime;
-    console.log(deltaTime);
-    const { days, hours, minutes, seconds } = convertMs(deltaTime);
-    updateTimeValues({ days, hours, minutes, seconds });
-    if (deltaTime < 999) {
-      clearInterval(intervalID);
-    }
-    console.log(`${days}:${hours}:${minutes}:${seconds}`);
-  }, 1000);
 }
