@@ -1,15 +1,16 @@
 import '../css/common.css';
 import 'flatpickr/dist/flatpickr.min.css';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 import flatpickr from 'flatpickr';
-
+const daysEl = document.querySelector('[data-days]');
+const hoursEl = document.querySelector('[data-hours]');
+const minutesEl = document.querySelector('[data-minutes]');
+const secondsEl = document.querySelector('[data-seconds]');
 const startBtn = document.querySelector('[data-start]');
 startBtn.setAttribute('disabled', true);
-// startBtn.addEventListener('click', onStartBtnCkick);
-
-// function onStartBtnCkick() {}
-
-const calendar = flatpickr('#datetime-picker', {
+let selectedTime = null;
+flatpickr('#datetime-picker', {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
@@ -17,22 +18,14 @@ const calendar = flatpickr('#datetime-picker', {
 
   onClose(selectedDates) {
     let currentTime = Date.now();
-    let selectedTime = selectedDates[0].getTime();
-
+    selectedTime = selectedDates[0].getTime();
     if (currentTime > selectedTime) {
-      window.alert('Please choose a date in the future');
+      // window.alert('Please choose a date in the future');
+      Notify.failure('Please choose a date in the future');
+      startBtn.setAttribute('disabled', true);
       return;
     } else {
       startBtn.removeAttribute('disabled');
-    }
-    startBtn.addEventListener('click', onStartBtnCkick);
-    function onStartBtnCkick() {
-      setInterval(() => {
-        const curTime = Date.now();
-        const deltaTime = selectedTime - curTime;
-        const { days, hours, minutes, seconds } = convertMs(deltaTime);
-        console.log(`${days}:${hours}:${minutes}:${seconds}`);
-      }, 1000);
     }
   },
 });
@@ -58,4 +51,26 @@ function convertMs(ms) {
 
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');
+}
+
+function updateTimeValues({ days, hours, minutes, seconds }) {
+  daysEl.textContent = `${days}`;
+  hoursEl.textContent = `${hours}`;
+  minutesEl.textContent = `${minutes}`;
+  secondsEl.textContent = `${seconds}`;
+}
+
+startBtn.addEventListener('click', onStartBtnCkick);
+function onStartBtnCkick() {
+  const intervalID = setInterval(() => {
+    const curTime = Date.now();
+    const deltaTime = selectedTime - curTime;
+    console.log(deltaTime);
+    const { days, hours, minutes, seconds } = convertMs(deltaTime);
+    updateTimeValues({ days, hours, minutes, seconds });
+    if (deltaTime < 999) {
+      clearInterval(intervalID);
+    }
+    console.log(`${days}:${hours}:${minutes}:${seconds}`);
+  }, 1000);
 }
