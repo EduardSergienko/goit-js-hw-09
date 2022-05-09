@@ -44,7 +44,7 @@ function onStartBtnCkick() {
     if (deltaTime < 999) {
       clearInterval(intervalID);
     }
-    console.log(`${days}:${hours}:${minutes}:${seconds}`);
+    // console.log(`${days}:${hours}:${minutes}:${seconds}`);
   }, 1000);
 }
 
