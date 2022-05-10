@@ -10,6 +10,7 @@ let intervalId = null;
 startBtn.addEventListener('click', onStartBtnClick);
 stoptBtn.addEventListener('click', onStopBtnClick);
 function onStartBtnClick() {
+  bodyEl.style.backgroundColor = getRandomHexColor();
   intervalId = setInterval(
     () => {
       bodyEl.style.backgroundColor = getRandomHexColor();
